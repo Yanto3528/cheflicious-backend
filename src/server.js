@@ -12,6 +12,7 @@ const categories = require("./routes/categories");
 const recipes = require("./routes/recipes");
 const comments = require("./routes/comments");
 const users = require("./routes/users");
+const upload = require("./routes/upload");
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use("/api/categories", categories);
 app.use("/api/recipes", recipes);
 app.use("/api/comments", comments);
 app.use("/api/users", users);
+app.use("/api/upload", upload);
 
 app.use(errorHandler);
 

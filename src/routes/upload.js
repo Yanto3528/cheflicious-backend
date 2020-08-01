@@ -1,6 +1,10 @@
-const AWS = require("aws-sdk");
+const express = require("express");
+const upload = require("../upload");
+const { uploadImage } = require("../controllers/upload");
+const { protect } = require("../middlewares/auth");
 
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-});
+const router = express.Router();
+
+router.post("/", protect, upload, uploadImage);
+
+module.exports = router;
