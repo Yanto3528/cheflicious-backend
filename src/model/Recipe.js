@@ -7,23 +7,37 @@ const RecipeSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     image: {
       type: String,
-      // required: true,
+      required: true,
     },
     ingredients: [
       {
-        type: String,
-        required: true,
+        // id: {
+        //   type: String,
+        //   required: true,
+        // },
+        value: {
+          type: String,
+          required: true,
+        },
       },
     ],
     instructions: [
       {
-        description: {
+        // id: {
+        //   type: String,
+        //   required: true,
+        // },
+        value: {
           type: String,
           required: true,
         },
-        image: String,
       },
     ],
     servings: {
@@ -31,8 +45,8 @@ const RecipeSchema = mongoose.Schema(
       default: 1,
     },
     cookingTime: {
-      type: Date,
-      default: Date.now,
+      type: Number,
+      default: 5,
     },
     difficulty: {
       type: String,

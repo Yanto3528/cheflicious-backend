@@ -18,7 +18,8 @@ exports.validateLogin = [
 
 // Categories
 exports.validateCreateCategory = [
-  check("name", "Name is required").not().isEmpty(),
+  check("value", "Name is required").not().isEmpty(),
+  check("image", "Image is required").not().isEmpty(),
 ];
 
 // Recipes

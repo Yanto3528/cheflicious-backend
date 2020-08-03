@@ -11,7 +11,7 @@ exports.uploadImage = async (req, res) => {
   const imageKey = `${req.user._id}/${v4()}.jpg`;
   try {
     const image = await sharp(req.file.buffer)
-      .resize(430)
+      .resize(500)
       .jpeg({ quality: 50 })
       .toBuffer();
 
@@ -27,6 +27,9 @@ exports.uploadImage = async (req, res) => {
       res.status(200).json(data);
     });
   } catch (error) {
-    res.json(error);
+    res.json({
+      error:
+        "There was something wrong when uploading image. Please try again later.",
+    });
   }
 };

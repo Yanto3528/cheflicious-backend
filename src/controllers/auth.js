@@ -6,24 +6,14 @@ const ErrorResponse = require("../utils/errorResponse");
 // @Method/Route    POST /api/auth/register
 // @Access          Public
 exports.register = asyncHandler(async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { email } = req.body;
   let user = await User.findOne({ email });
   if (user) {
     return next(new ErrorResponse("User already exists. Please sign in.", 401));
   }
   user = await User.create(req.body);
   const token = user.getSignedJwtToken();
-  const cookieOptions = {
-    expires: new Date(
-      Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-  };
-  res
-    .status(200)
-    .cookie("token", token, cookieOptions)
-    .json({ message: "Register successfully" });
+  res.status(201).json({ token });
 });
 
 // @description     Login a user
@@ -40,17 +30,7 @@ exports.login = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse("Invalid Credentials", 401));
   }
   const token = user.getSignedJwtToken();
-  const cookieOptions = {
-    expires: new Date(
-      Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-  };
-  res
-    .status(200)
-    .cookie("token", token, cookieOptions)
-    .json({ message: "Login successfully" });
+  res.status(200).json({ token });
 });
 
 // @description     Logout a user
