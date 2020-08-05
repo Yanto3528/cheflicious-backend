@@ -7,6 +7,11 @@ const RecipeSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     description: {
       type: String,
       required: true,
@@ -18,10 +23,6 @@ const RecipeSchema = mongoose.Schema(
     },
     ingredients: [
       {
-        // id: {
-        //   type: String,
-        //   required: true,
-        // },
         value: {
           type: String,
           required: true,
@@ -30,10 +31,6 @@ const RecipeSchema = mongoose.Schema(
     ],
     instructions: [
       {
-        // id: {
-        //   type: String,
-        //   required: true,
-        // },
         value: {
           type: String,
           required: true,

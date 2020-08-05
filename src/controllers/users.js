@@ -8,3 +8,13 @@ const ErrorResponse = require("../utils/errorResponse");
 exports.getMe = asyncHandler(async (req, res, next) => {
   res.status(200).json(req.user);
 });
+
+// @description     Update user
+// @Method/Route    PUT /api/users/update
+// @Access          Private
+exports.updateUser = asyncHandler(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(req.user._id, req.body, {
+    new: true,
+  });
+  res.json(user);
+});

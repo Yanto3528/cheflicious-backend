@@ -1,3 +1,4 @@
+const slugify = require("slugify");
 const Category = require("../model/Category");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/errorResponse");
@@ -14,6 +15,9 @@ exports.getCategories = asyncHandler(async (req, res, next) => {
 // @Method/Route    POST /api/categories
 // @Access          Private
 exports.createCategory = asyncHandler(async (req, res, next) => {
+  req.body.slug = slugify(req.body.value, {
+    lower: true,
+  });
   const category = await Category.create(req.body);
   res.status(200).json(category);
 });

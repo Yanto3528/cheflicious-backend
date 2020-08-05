@@ -22,7 +22,11 @@ const UserSchema = mongoose.Schema(
       min: 6,
       select: false,
     },
-    avatar: String,
+    avatar: {
+      type: String,
+      default:
+        "https://cheflicious-bucket.s3-ap-southeast-1.amazonaws.com/chef-avatar.jpg",
+    },
     bio: String,
     followers: [
       {
@@ -36,7 +40,7 @@ const UserSchema = mongoose.Schema(
         ref: "User",
       },
     ],
-    favorite: [
+    favorites: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Recipe",

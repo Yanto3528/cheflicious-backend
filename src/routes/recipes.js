@@ -1,7 +1,9 @@
 const express = require("express");
 const {
   getRecipes,
+  getRecipesByCategory,
   getRecipesByUser,
+  getRecipe,
   createRecipe,
   updateRecipe,
   likeRecipe,
@@ -20,7 +22,9 @@ const router = express.Router({ mergeParams: true });
 router.use("/:recipeId/comments", commentRouter);
 
 router.get("/", getRecipes);
+router.get("/categories/:slug", getRecipesByCategory);
 router.get("/", getRecipesByUser);
+router.get("/:slug", getRecipe);
 router.post("/", protect, validateCreateRecipe, validationResult, createRecipe);
 router.put(
   "/:id",

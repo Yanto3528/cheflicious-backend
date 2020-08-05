@@ -12,8 +12,28 @@ const CategorySchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toObject: {
+      virtuals: true,
+    },
+    toJSON: {
+      virtuals: true,
+    },
+  }
 );
+
+CategorySchema.virtual("recipes", {
+  ref: "Recipe",
+  localField: "_id",
+  foreignField: "categories",
+  justOne: false,
+});
 
 module.exports = mongoose.model("Category", CategorySchema);

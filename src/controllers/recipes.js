@@ -1,4 +1,6 @@
+const slugify = require("slugify");
 const Recipe = require("../model/Recipe");
+const Category = require("../model/Category");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/errorResponse");
 
@@ -6,18 +8,68 @@ const ErrorResponse = require("../utils/errorResponse");
 // @Method/Route    GET /api/recipes
 // @Access          Public
 exports.getRecipes = asyncHandler(async (req, res, next) => {
-  const recipes = await Recipe.find();
+  const recipes = await Recipe.find(req.query)
+    .populate({
+      path: "categories",
+      select: "value",
+    })
+    .sort("-createdAt")
+    .limit(8)
+    .lean();
   res.status(200).json(recipes);
+});
+
+// @description     Get all recipes by specific category
+// @Method/Route    GET /api/recipes/categories/:slug
+// @Access          Public
+exports.getRecipesByCategory = asyncHandler(async (req, res, next) => {
+  const { slug } = req.params;
+  const category = await Category.findOne({ slug })
+    .populate({
+      path: "recipes",
+      populate: {
+        path: "categories",
+        select: "value",
+      },
+    })
+    .sort("-createdAt");
+  res.status(200).json(category);
 });
 
 // @description     Get all recipes for specific user
 // @Method/Route    GET /api/users/:userId/recipes
 // @Access          Public
 exports.getRecipesByUser = asyncHandler(async (req, res, next) => {
-  const recipes = await Recipe.find({ author: req.params.userId }).sort(
-    "-createdAt"
-  );
+  const recipes = await Recipe.find({ author: req.params.userId })
+    .sort("-createdAt")
+    .lean();
   res.status(200).json(recipes);
+});
+
+// @description     Get a single recipe
+// @Method/Route    GET /api/recipes/:slug
+// @Access          Public
+exports.getRecipe = asyncHandler(async (req, res, next) => {
+  const { slug } = req.params;
+  const recipe = await Recipe.findOne({ slug })
+    .populate({ path: "author", select: "name" })
+    .populate({ path: "categories", select: "value" })
+    .lean();
+
+  const recipes = await Recipe.find({
+    $and: [
+      {
+        _id: { $ne: recipe._id },
+      },
+      {
+        $or: [{ categories: { $in: recipe.categories } }],
+      },
+    ],
+  })
+    .limit(3)
+    .lean();
+
+  res.status(200).json({ recipe, relatedRecipes: recipes });
 });
 
 // @description     Create new Recipe
@@ -25,6 +77,11 @@ exports.getRecipesByUser = asyncHandler(async (req, res, next) => {
 // @Access          Private
 exports.createRecipe = asyncHandler(async (req, res, next) => {
   req.body.author = req.user._id;
+
+  req.body.slug = slugify(req.body.title, {
+    remove: /[*+~.()'"!:@]/g,
+    lower: true,
+  });
 
   const recipe = await Recipe.create(req.body);
   res.status(200).json(recipe);

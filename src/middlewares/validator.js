@@ -16,6 +16,11 @@ exports.validateLogin = [
   }),
 ];
 
+exports.validateUpdateUser = [
+  check("name", "Name cannot be empty").not().isEmpty().optional(),
+  check("bio", "Bio cannot be empty").not().isEmpty().optional(),
+];
+
 // Categories
 exports.validateCreateCategory = [
   check("value", "Name is required").not().isEmpty(),
