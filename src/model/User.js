@@ -47,8 +47,23 @@ const UserSchema = mongoose.Schema(
       },
     ],
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toObject: {
+      virtuals: true,
+    },
+    toJSON: {
+      virtuals: true,
+    },
+  }
 );
+
+UserSchema.virtual("recipes", {
+  ref: "Recipe",
+  localField: "_id",
+  foreignField: "author",
+  justOne: false,
+});
 
 // Encrypt user password to database
 UserSchema.pre("save", async function (next) {

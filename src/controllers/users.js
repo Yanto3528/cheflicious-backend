@@ -9,6 +9,20 @@ exports.getMe = asyncHandler(async (req, res, next) => {
   res.status(200).json(req.user);
 });
 
+// @description     Get a single user
+// @Method/Route    GET /api/users/:id/profile
+// @Access          Public
+exports.getUser = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.params.id).populate({
+    path: "recipes",
+    populate: "categories",
+  });
+  if (!user) {
+    return next(new ErrorResponse("No user found with this id", 404));
+  }
+  res.status(200).json(user);
+});
+
 // @description     Update user
 // @Method/Route    PUT /api/users/update
 // @Access          Private

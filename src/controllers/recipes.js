@@ -8,15 +8,7 @@ const ErrorResponse = require("../utils/errorResponse");
 // @Method/Route    GET /api/recipes
 // @Access          Public
 exports.getRecipes = asyncHandler(async (req, res, next) => {
-  const recipes = await Recipe.find(req.query)
-    .populate({
-      path: "categories",
-      select: "value",
-    })
-    .sort("-createdAt")
-    .limit(8)
-    .lean();
-  res.status(200).json(recipes);
+  res.status(200).json(res.advancedResults);
 });
 
 // @description     Get all recipes by specific category
@@ -27,13 +19,10 @@ exports.getRecipesByCategory = asyncHandler(async (req, res, next) => {
   const category = await Category.findOne({ slug })
     .populate({
       path: "recipes",
-      populate: {
-        path: "categories",
-        select: "value",
-      },
+      populate: "categories",
     })
     .sort("-createdAt");
-  res.status(200).json(category);
+  res.status(200).json({ category, nextPage: false });
 });
 
 // @description     Get all recipes for specific user
@@ -53,7 +42,7 @@ exports.getRecipe = asyncHandler(async (req, res, next) => {
   const { slug } = req.params;
   const recipe = await Recipe.findOne({ slug })
     .populate({ path: "author", select: "name" })
-    .populate({ path: "categories", select: "value" })
+    .populate("categories")
     .lean();
 
   const recipes = await Recipe.find({

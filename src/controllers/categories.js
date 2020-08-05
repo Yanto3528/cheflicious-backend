@@ -7,7 +7,7 @@ const ErrorResponse = require("../utils/errorResponse");
 // @Method/Route    GET /api/categories
 // @Access          Public
 exports.getCategories = asyncHandler(async (req, res, next) => {
-  const categories = await Category.find();
+  const categories = await Category.find().lean();
   res.status(200).json(categories);
 });
 

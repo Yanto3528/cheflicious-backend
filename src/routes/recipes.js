@@ -1,4 +1,5 @@
 const express = require("express");
+const Recipe = require("../model/Recipe");
 const {
   getRecipes,
   getRecipesByCategory,
@@ -15,13 +16,14 @@ const {
   validationResult,
 } = require("../middlewares/validator");
 const { protect } = require("../middlewares/auth");
+const advancedResults = require("../middlewares/advancedResults");
 const commentRouter = require("./comments");
 
 const router = express.Router({ mergeParams: true });
 
 router.use("/:recipeId/comments", commentRouter);
 
-router.get("/", getRecipes);
+router.get("/", advancedResults(Recipe, "categories"), getRecipes);
 router.get("/categories/:slug", getRecipesByCategory);
 router.get("/", getRecipesByUser);
 router.get("/:slug", getRecipe);

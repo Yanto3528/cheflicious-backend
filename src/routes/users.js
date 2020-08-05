@@ -1,5 +1,5 @@
 const express = require("express");
-const { getMe, updateUser } = require("../controllers/users");
+const { getMe, getUser, updateUser } = require("../controllers/users");
 const {
   validateUpdateUser,
   validationResult,
@@ -12,6 +12,7 @@ const router = express.Router();
 router.use("/:userId/recipes", recipeRouter);
 
 router.get("/me", protect, getMe);
+router.get("/:id/profile", getUser);
 router.put(
   "/update",
   protect,
