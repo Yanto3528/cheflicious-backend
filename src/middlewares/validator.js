@@ -18,7 +18,21 @@ exports.validateLogin = [
 
 exports.validateUpdateUser = [
   check("name", "Name cannot be empty").not().isEmpty().optional(),
-  check("bio", "Bio cannot be empty").not().isEmpty().optional(),
+];
+
+exports.validateChangePassword = [
+  check(
+    "oldPassword",
+    "Old password must be at least 6 character or more"
+  ).isLength({
+    min: 6,
+  }),
+  check(
+    "newPassword",
+    "New password must be at least 6 character or more"
+  ).isLength({
+    min: 6,
+  }),
 ];
 
 // Categories

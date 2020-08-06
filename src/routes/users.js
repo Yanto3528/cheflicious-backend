@@ -1,7 +1,13 @@
 const express = require("express");
-const { getMe, getUser, updateUser } = require("../controllers/users");
+const {
+  getMe,
+  getUser,
+  updateUser,
+  changePassword,
+} = require("../controllers/users");
 const {
   validateUpdateUser,
+  validateChangePassword,
   validationResult,
 } = require("../middlewares/validator");
 const { protect } = require("../middlewares/auth");
@@ -19,6 +25,13 @@ router.put(
   validateUpdateUser,
   validationResult,
   updateUser
+);
+router.put(
+  "/change-password",
+  protect,
+  validateChangePassword,
+  validationResult,
+  changePassword
 );
 
 module.exports = router;

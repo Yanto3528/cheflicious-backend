@@ -16,13 +16,39 @@ exports.getRecipes = asyncHandler(async (req, res, next) => {
 // @Access          Public
 exports.getRecipesByCategory = asyncHandler(async (req, res, next) => {
   const { slug } = req.params;
-  const category = await Category.findOne({ slug })
-    .populate({
-      path: "recipes",
-      populate: "categories",
-    })
-    .sort("-createdAt");
-  res.status(200).json({ category, nextPage: false });
+  const category = await Category.findOne({ slug });
+
+  const page = req.query.page || 1;
+  const limit = 9;
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+  const total = await Recipe.countDocuments({ categories: category });
+
+  const recipes = await Recipe.find({ categories: category })
+    .populate("categories")
+    .sort("-createdAt")
+    .skip(startIndex)
+    .limit(limit);
+  let nextPage;
+  let prevPage;
+  if (endIndex < total) {
+    nextPage = true;
+  } else {
+    nextPage = false;
+  }
+  if (startIndex > 0) {
+    prevPage = true;
+  } else {
+    prevPage = false;
+  }
+  res.status(200).json({
+    title: category.value,
+    total,
+    count: recipes.length,
+    prevPage,
+    nextPage,
+    data: recipes,
+  });
 });
 
 // @description     Get all recipes for specific user
@@ -72,8 +98,8 @@ exports.createRecipe = asyncHandler(async (req, res, next) => {
     lower: true,
   });
 
-  const recipe = await Recipe.create(req.body);
-  res.status(200).json(recipe);
+  await Recipe.create(req.body);
+  res.status(200).json({ message: "Recipe created" });
 });
 
 // @description     Update existing Recipe
