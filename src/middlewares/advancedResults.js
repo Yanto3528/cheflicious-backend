@@ -16,9 +16,14 @@ const advancedResults = (model, populate, populate2) => async (
     "following",
     "followers",
     "id",
+    "search",
   ];
 
   removeFields.forEach((param) => delete reqQuery[param]);
+
+  if (req.query.search) {
+    reqQuery.title = { $regex: req.query.search, $options: "i" };
+  }
 
   let queryStr = JSON.stringify(reqQuery);
 

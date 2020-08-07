@@ -4,6 +4,8 @@ const {
   getUser,
   updateUser,
   changePassword,
+  followUser,
+  unfollowUser,
 } = require("../controllers/users");
 const {
   validateUpdateUser,
@@ -33,5 +35,7 @@ router.put(
   validationResult,
   changePassword
 );
+router.put("/:id/follow", protect, followUser);
+router.put("/:id/unfollow", protect, unfollowUser);
 
 module.exports = router;

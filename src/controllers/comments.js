@@ -47,7 +47,7 @@ exports.updateComment = asyncHandler(async (req, res, next) => {
   }
   if (comment.author.toString() !== req.user._id.toString()) {
     return next(
-      new ErrorResponse("You are not authorized to update this", 401)
+      new ErrorResponse("You are not authorized to update this", 400)
     );
   }
   comment = await Comment.findByIdAndUpdate(id, req.body, {
@@ -68,7 +68,7 @@ exports.deleteComment = asyncHandler(async (req, res, next) => {
   }
   if (comment.author.toString() !== req.user._id.toString()) {
     return next(
-      new ErrorResponse("You are not authorized to delete this", 401)
+      new ErrorResponse("You are not authorized to delete this", 400)
     );
   }
   await comment.remove();
