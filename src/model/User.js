@@ -28,6 +28,11 @@ const UserSchema = mongoose.Schema(
         "https://cheflicious-bucket.s3-ap-southeast-1.amazonaws.com/chef-avatar.jpg",
     },
     bio: String,
+    socketId: String,
+    online: {
+      type: Boolean,
+      default: false,
+    },
     followers: [
       {
         type: mongoose.Schema.Types.ObjectId,

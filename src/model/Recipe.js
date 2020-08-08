@@ -61,12 +61,6 @@ const RecipeSchema = mongoose.Schema(
         ref: "User",
       },
     ],
-    comments: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Comment",
-      },
-    ],
     categories: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -76,5 +70,29 @@ const RecipeSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+
+function autoPopulate(next) {
+  this.populate("categories").populate({ path: "comments", select: "_id" });
+  next();
+}
+
+function autoPopulateCommentsWithAuthor(next) {
+  this.populate("categories").populate({
+    path: "comments",
+    populate: { path: "author", select: "name avatar" },
+  });
+  next();
+}
+
+RecipeSchema.pre("find", autoPopulate);
+RecipeSchema.pre("findOne", autoPopulateCommentsWithAuthor);
+RecipeSchema.pre("findByIdAndUpdate", autoPopulateCommentsWithAuthor);
+
+RecipeSchema.virtual("comments", {
+  ref: "Comment",
+  localField: "_id",
+  foreignField: "recipe",
+  justOne: false,
+});
 
 module.exports = mongoose.model("Recipe", RecipeSchema);

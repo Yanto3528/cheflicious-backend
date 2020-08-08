@@ -23,7 +23,7 @@ const router = express.Router({ mergeParams: true });
 
 router.use("/:recipeId/comments", commentRouter);
 
-router.get("/", advancedResults(Recipe, "categories"), getRecipes);
+router.get("/", advancedResults(Recipe), getRecipes);
 router.get("/categories/:slug", getRecipesByCategory);
 router.get("/", getRecipesByUser);
 router.get("/:slug", getRecipe);

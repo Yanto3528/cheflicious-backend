@@ -25,7 +25,8 @@ exports.getRecipesByCategory = asyncHandler(async (req, res, next) => {
   const total = await Recipe.countDocuments({ categories: category });
 
   const recipes = await Recipe.find({ categories: category })
-    .populate("categories")
+    // .populate("categories")
+    // .populate({ path: "comments", select: "content" })
     .sort("-createdAt")
     .skip(startIndex)
     .limit(limit);
@@ -56,6 +57,7 @@ exports.getRecipesByCategory = asyncHandler(async (req, res, next) => {
 // @Access          Public
 exports.getRecipesByUser = asyncHandler(async (req, res, next) => {
   const recipes = await Recipe.find({ author: req.params.userId })
+    // .populate({ path: "comments", select: "content" })
     .sort("-createdAt")
     .lean();
   res.status(200).json(recipes);
@@ -68,7 +70,11 @@ exports.getRecipe = asyncHandler(async (req, res, next) => {
   const { slug } = req.params;
   const recipe = await Recipe.findOne({ slug })
     .populate({ path: "author", select: "name" })
-    .populate("categories")
+    // .populate("categories")
+    // .populate({
+    //   path: "comments",
+    //   populate: { path: "author", select: "name avatar" },
+    // })
     .lean();
 
   const recipes = await Recipe.find({
@@ -117,7 +123,9 @@ exports.updateRecipe = asyncHandler(async (req, res, next) => {
       new ErrorResponse("You are not authorized to update this", 400)
     );
   }
-  recipe = await Recipe.findByIdAndUpdate(id, req.body, { new: true });
+  recipe = await Recipe.findByIdAndUpdate(id, req.body, {
+    new: true,
+  });
   res.status(200).json(recipe);
 });
 

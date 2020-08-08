@@ -1,7 +1,9 @@
 const Comment = require("../model/Comment");
 const Recipe = require("../model/Recipe");
+const Notification = require("../model/Notification");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/errorResponse");
+const { getIO } = require("../utils/socket");
 
 // @description     Get all Comments for specific recipe
 // @Method/Route    GET /api/recipes/:recipeId/comments
@@ -32,6 +34,16 @@ exports.createComment = asyncHandler(async (req, res, next) => {
   comment = await comment
     .populate({ path: "author", select: "name avatar" })
     .execPopulate();
+
+  if (comment.author._id.toString() !== recipe.author.toString()) {
+    const notification = await Notification.create({
+      receiver: recipe.author,
+      sender: { name: req.user.name, avatar: req.user.avatar },
+      message: `<strong>${req.user.name}</strong> commented on your recipe`,
+    });
+    const io = getIO();
+    io.to(recipe.author).emit("getNotification", notification);
+  }
   res.status(200).json(comment);
 });
 
