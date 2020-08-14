@@ -8,6 +8,8 @@ const connectDB = require("./database");
 const errorHandler = require("./middlewares/error");
 const socket = require("./utils/socket");
 const compression = require("compression");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
 
 const auth = require("./routes/auth");
 const categories = require("./routes/categories");
@@ -23,6 +25,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(helmet());
+app.use(mongoSanitize());
+app.use(xss());
 app.use(compression());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));

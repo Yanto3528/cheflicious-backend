@@ -1,10 +1,11 @@
 {
-  "name": "Cheflicious Backend",
+  "name": "cheflicious-backend",
   "version": "1.0.0",
   "description": "A website for sharing recipe with other people.",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon src/server"
+    "start": "nodemon src/server",
+    "build": "node build"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +18,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-mongo-sanitize": "^2.0.0",
     "express-validator": "^6.6.0",
     "helmet": "^3.23.3",
     "jsonwebtoken": "^8.5.1",
@@ -26,7 +28,8 @@
     "sharp": "^0.25.4",
     "slugify": "^1.4.5",
     "socket.io": "^2.3.0",
-    "uuid": "^8.3.0"
+    "uuid": "^8.3.0",
+    "xss-clean": "^0.1.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
