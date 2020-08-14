@@ -1,8 +1,8 @@
 {
-  "name": "server",
+  "name": "Cheflicious Backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A website for sharing recipe with other people.",
+  "main": "server.js",
   "scripts": {
     "start": "nodemon src/server"
   },
