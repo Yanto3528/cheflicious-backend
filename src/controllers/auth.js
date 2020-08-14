@@ -13,7 +13,7 @@ exports.register = asyncHandler(async (req, res, next) => {
   }
   user = await User.create(req.body);
   const token = user.getSignedJwtToken();
-  res.status(201).json({ token });
+  res.status(201).json({ success: true });
 });
 
 // @description     Login a user
@@ -30,7 +30,15 @@ exports.login = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse("Invalid Credentials", 401));
   }
   const token = user.getSignedJwtToken();
-  res.status(200).json({ token });
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    domain: "localhost",
+    expires: new Date(
+      Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+    ),
+  });
+  res.status(200).json({ success: true });
 });
 
 // @description     Logout a user

@@ -1,6 +1,8 @@
 const User = require("../model/User");
+const Notification = require("../model/Notification");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/errorResponse");
+const { getIO } = require("../utils/socket");
 
 // @description     Get currently logged in user
 // @Method/Route    GET /api/users/me
@@ -72,7 +74,7 @@ exports.followUser = asyncHandler(async (req, res, next) => {
     );
   }
   const currentUser = req.user;
-  // If the currentUser already followed the user, then unfollow
+  // If the currentUser already followed the user, then return error message
   if (user.followers && user.followers.includes(currentUser._id)) {
     return next(new ErrorResponse("You already followed this user", 400));
   }
@@ -80,6 +82,13 @@ exports.followUser = asyncHandler(async (req, res, next) => {
   // If the above statement is false, then follow the user
   user.followers.push(currentUser._id);
   currentUser.following.push(user._id);
+  const notification = await Notification.create({
+    receiver: user._id,
+    sender: { name: currentUser.name, avatar: currentUser.avatar },
+    message: `<strong>${currentUser.name}</strong> followed you`,
+  });
+  const io = getIO();
+  io.to(user.socketId).emit("getNotification", notification);
 
   await user.save();
   await currentUser.save();

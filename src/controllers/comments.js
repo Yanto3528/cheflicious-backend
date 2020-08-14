@@ -22,7 +22,10 @@ exports.getComments = asyncHandler(async (req, res, next) => {
 // @Access          Private
 exports.createComment = asyncHandler(async (req, res, next) => {
   const { recipeId } = req.params;
-  const recipe = await Recipe.findById(recipeId);
+  const recipe = await Recipe.findById(recipeId).populate({
+    path: "author",
+    select: "socketId",
+  });
   if (!recipe) {
     return next(new ErrorResponse("There is no recipe with this id", 404));
   }
@@ -35,14 +38,15 @@ exports.createComment = asyncHandler(async (req, res, next) => {
     .populate({ path: "author", select: "name avatar" })
     .execPopulate();
 
-  if (comment.author._id.toString() !== recipe.author.toString()) {
+  if (comment.author._id.toString() !== recipe.author._id.toString()) {
     const notification = await Notification.create({
-      receiver: recipe.author,
+      receiver: recipe.author._id,
       sender: { name: req.user.name, avatar: req.user.avatar },
+      recipeSlug: recipe.slug,
       message: `<strong>${req.user.name}</strong> commented on your recipe`,
     });
     const io = getIO();
-    io.to(recipe.author).emit("getNotification", notification);
+    io.to(recipe.author.socketId).emit("getNotification", notification);
   }
   res.status(200).json(comment);
 });

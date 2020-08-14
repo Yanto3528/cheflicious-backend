@@ -8,19 +8,14 @@ const NotificationSchema = mongoose.Schema(
       required: true,
     },
     sender: {
-      name: {
-        type: String,
-        required: true,
-      },
-      avatar: {
-        type: String,
-        required: true,
-      },
+      name: String,
+      avatar: String,
     },
     message: {
       type: String,
       required: true,
     },
+    recipeSlug: String,
     read: {
       type: Boolean,
       default: false,

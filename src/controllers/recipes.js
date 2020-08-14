@@ -1,8 +1,10 @@
 const slugify = require("slugify");
 const Recipe = require("../model/Recipe");
 const Category = require("../model/Category");
+const Notification = require("../model/Notification");
 const asyncHandler = require("../middlewares/async");
 const ErrorResponse = require("../utils/errorResponse");
+const { getIO } = require("../utils/socket");
 
 // @description     Get all recipes
 // @Method/Route    GET /api/recipes
@@ -25,8 +27,6 @@ exports.getRecipesByCategory = asyncHandler(async (req, res, next) => {
   const total = await Recipe.countDocuments({ categories: category });
 
   const recipes = await Recipe.find({ categories: category })
-    // .populate("categories")
-    // .populate({ path: "comments", select: "content" })
     .sort("-createdAt")
     .skip(startIndex)
     .limit(limit);
@@ -70,11 +70,6 @@ exports.getRecipe = asyncHandler(async (req, res, next) => {
   const { slug } = req.params;
   const recipe = await Recipe.findOne({ slug })
     .populate({ path: "author", select: "name" })
-    // .populate("categories")
-    // .populate({
-    //   path: "comments",
-    //   populate: { path: "author", select: "name avatar" },
-    // })
     .lean();
 
   const recipes = await Recipe.find({
@@ -126,7 +121,7 @@ exports.updateRecipe = asyncHandler(async (req, res, next) => {
   recipe = await Recipe.findByIdAndUpdate(id, req.body, {
     new: true,
   });
-  res.status(200).json(recipe);
+  res.status(200).json({ message: "Recipe updated successfully" });
 });
 
 // @description     Like existing Recipe
@@ -135,7 +130,10 @@ exports.updateRecipe = asyncHandler(async (req, res, next) => {
 exports.likeRecipe = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
-  let recipe = await Recipe.findById(id);
+  let recipe = await Recipe.findById(id).populate({
+    path: "author",
+    select: "name avatar socketId",
+  });
   if (!recipe) {
     return next(new ErrorResponse("No recipe with this id", 404));
   }
@@ -144,9 +142,17 @@ exports.likeRecipe = asyncHandler(async (req, res, next) => {
     recipe.likes.splice(currentUserIndex, 1);
   } else {
     recipe.likes.push(req.user._id);
+    const notification = await Notification.create({
+      receiver: recipe.author._id,
+      sender: { name: req.user.name, avatar: req.user.avatar },
+      recipeSlug: recipe.slug,
+      message: `<strong>${req.user.name}</strong> liked your recipe`,
+    });
+    const io = getIO();
+    io.to(recipe.author.socketId).emit("getNotification", notification);
   }
   await recipe.save();
-  res.status(200).json(recipe);
+  res.status(200).json({ success: true });
 });
 
 // @description     Delete existing Recipe

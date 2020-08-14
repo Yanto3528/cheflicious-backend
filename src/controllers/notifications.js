@@ -1,6 +1,5 @@
 const Notification = require("../model/Notification");
 const asyncHandler = require("../middlewares/async");
-const ErrorResponse = require("../utils/errorResponse");
 
 // @description     Get all notification for currently logged in user
 // @Method/Route    GET /api/notifications
@@ -11,10 +10,7 @@ exports.getNotifications = asyncHandler(async (req, res) => {
   })
     .sort("-createdAt")
     .lean();
-  res.status(200).json({
-    success: true,
-    data: notifications,
-  });
+  res.status(200).json(notifications);
 });
 
 // @description     Read all notifications for specific user

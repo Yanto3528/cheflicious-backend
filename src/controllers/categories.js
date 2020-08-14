@@ -1,7 +1,6 @@
 const slugify = require("slugify");
 const Category = require("../model/Category");
 const asyncHandler = require("../middlewares/async");
-const ErrorResponse = require("../utils/errorResponse");
 
 // @description     Get all categories
 // @Method/Route    GET /api/categories
