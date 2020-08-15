@@ -9,8 +9,7 @@
     "npm": "6.x"
   },
   "scripts": {
-    "start": "nodemon src/server",
-    "build": "node build"
+    "start": "nodemon src/server"
   },
   "keywords": [],
   "author": "",
