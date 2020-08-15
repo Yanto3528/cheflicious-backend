@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "A website for sharing recipe with other people.",
   "main": "server.js",
+  "engines": {
+    "node": "12.x"
+  },
   "scripts": {
     "start": "nodemon src/server",
     "build": "node build"
