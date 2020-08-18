@@ -13,6 +13,17 @@ exports.register = asyncHandler(async (req, res, next) => {
   }
   user = await User.create(req.body);
   const token = user.getSignedJwtToken();
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    domain:
+      process.env.NODE_ENV === "production"
+        ? "https://cheflicious.online"
+        : "localhost",
+    expires: new Date(
+      Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+    ),
+  });
   res.status(201).json({ success: true });
 });
 
@@ -33,7 +44,10 @@ exports.login = asyncHandler(async (req, res, next) => {
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    domain: "localhost",
+    domain:
+      process.env.NODE_ENV === "production"
+        ? "https://cheflicious.online"
+        : "localhost",
     expires: new Date(
       Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
     ),
