@@ -13,18 +13,18 @@ exports.register = asyncHandler(async (req, res, next) => {
   }
   user = await User.create(req.body);
   const token = user.getSignedJwtToken();
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    domain:
-      process.env.NODE_ENV === "production"
-        ? "https://cheflicious.online"
-        : "localhost",
-    expires: new Date(
-      Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
-    ),
-  });
-  res.status(201).json({ success: true });
+  // res.cookie("token", token, {
+  //   httpOnly: true,
+  //   secure: process.env.NODE_ENV === "production",
+  //   domain:
+  //     process.env.NODE_ENV === "production"
+  //       ? "https://cheflicious.online"
+  //       : "localhost",
+  //   expires: new Date(
+  //     Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+  //   ),
+  // });
+  res.status(201).json({ token });
 });
 
 // @description     Login a user
@@ -41,18 +41,18 @@ exports.login = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse("Invalid Credentials", 401));
   }
   const token = user.getSignedJwtToken();
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    domain:
-      process.env.NODE_ENV === "production"
-        ? "https://cheflicious.online"
-        : "localhost",
-    expires: new Date(
-      Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
-    ),
-  });
-  res.status(200).json({ success: true });
+  // res.cookie("token", token, {
+  //   httpOnly: true,
+  //   secure: process.env.NODE_ENV === "production",
+  //   domain:
+  //     process.env.NODE_ENV === "production"
+  //       ? "https://cheflicious.online"
+  //       : "localhost",
+  //   expires: new Date(
+  //     Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+  //   ),
+  // });
+  res.status(200).json({ token });
 });
 
 // @description     Logout a user

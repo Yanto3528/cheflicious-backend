@@ -142,14 +142,16 @@ exports.likeRecipe = asyncHandler(async (req, res, next) => {
     recipe.likes.splice(currentUserIndex, 1);
   } else {
     recipe.likes.push(req.user._id);
-    const notification = await Notification.create({
-      receiver: recipe.author._id,
-      sender: { name: req.user.name, avatar: req.user.avatar },
-      recipeSlug: recipe.slug,
-      message: `<strong>${req.user.name}</strong> liked your recipe`,
-    });
-    const io = getIO();
-    io.to(recipe.author.socketId).emit("getNotification", notification);
+    if (req.user._id.toString() !== recipe.author._id.toString()) {
+      const notification = await Notification.create({
+        receiver: recipe.author._id,
+        sender: { name: req.user.name, avatar: req.user.avatar },
+        recipeSlug: recipe.slug,
+        message: `<strong>${req.user.name}</strong> liked your recipe`,
+      });
+      const io = getIO();
+      io.to(recipe.author.socketId).emit("getNotification", notification);
+    }
   }
   await recipe.save();
   res.status(200).json({ success: true });
