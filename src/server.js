@@ -1,62 +1,62 @@
-require("dotenv").config({ path: "./src/config/config.env" });
-const express = require("express");
-const morgan = require("morgan");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
-const helmet = require("helmet");
-const connectDB = require("./database");
-const errorHandler = require("./middlewares/error");
-const socket = require("./utils/socket");
-const compression = require("compression");
-const mongoSanitize = require("express-mongo-sanitize");
-const xss = require("xss-clean");
+require('dotenv').config({ path: './src/config/config.env' })
+const express = require('express')
+const morgan = require('morgan')
+const cors = require('cors')
+const cookieParser = require('cookie-parser')
+const helmet = require('helmet')
+const connectDB = require('./database')
+const errorHandler = require('./middlewares/error')
+const socket = require('./utils/socket')
+const compression = require('compression')
+const mongoSanitize = require('express-mongo-sanitize')
+const xss = require('xss-clean')
 
-const auth = require("./routes/auth");
-const categories = require("./routes/categories");
-const recipes = require("./routes/recipes");
-const comments = require("./routes/comments");
-const users = require("./routes/users");
-const notifications = require("./routes/notifications");
-const upload = require("./routes/upload");
+const auth = require('./routes/auth')
+const categories = require('./routes/categories')
+const recipes = require('./routes/recipes')
+const comments = require('./routes/comments')
+const users = require('./routes/users')
+const notifications = require('./routes/notifications')
+const upload = require('./routes/upload')
 
-const app = express();
+const app = express()
 
-const whitelist = ["https://cheflicious.online", "http://localhost:3000"];
+const whitelist = ['https://cheflicious-frontend.vercel.app', 'http://localhost:3000']
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
+      callback(null, true)
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(new Error('Not allowed by CORS'))
     }
   },
   credentials: true,
-};
-
-app.use(express.json());
-app.use(cookieParser());
-app.use(cors(corsOptions));
-app.use(helmet());
-app.use(mongoSanitize());
-app.use(xss());
-app.use(compression());
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
 }
 
-connectDB();
+app.use(express.json())
+app.use(cookieParser())
+app.use(cors(corsOptions))
+app.use(helmet())
+app.use(mongoSanitize())
+app.use(xss())
+app.use(compression())
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'))
+}
 
-app.use("/api/auth", auth);
-app.use("/api/categories", categories);
-app.use("/api/recipes", recipes);
-app.use("/api/comments", comments);
-app.use("/api/users", users);
-app.use("/api/notifications", notifications);
-app.use("/api/upload", upload);
+connectDB()
 
-app.use(errorHandler);
+app.use('/api/auth', auth)
+app.use('/api/categories', categories)
+app.use('/api/recipes', recipes)
+app.use('/api/comments', comments)
+app.use('/api/users', users)
+app.use('/api/notifications', notifications)
+app.use('/api/upload', upload)
 
-const PORT = process.env.PORT || 5000;
+app.use(errorHandler)
 
-const server = app.listen(PORT, () => console.log(`Listening on PORT ${PORT}`));
-socket.init(server);
+const PORT = process.env.PORT || 5000
+
+const server = app.listen(PORT, () => console.log(`Listening on PORT ${PORT}`))
+socket.init(server)
